@@ -20,4 +20,4 @@ def get_description(data):
             HumanMessage(content="Analyze this data provided and give extensive insights about the characteristics of the terrain, possible opportunities, environmental risks and challenges, advice on infrastructure development, and any other relevant information that can help in formulating sustainable policies and strategies for the provided data area. Also, show the statistics provided in a comprehensive format")
         ]
     )
-    return response.content
+    return {"markdown": response.content}

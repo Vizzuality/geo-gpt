@@ -1,3 +1,4 @@
+
 // Initialize the map
 let map;
 function initMap() {
@@ -64,7 +65,8 @@ async function geocodeLocation(location) {
       tileSize: new google.maps.Size(256, 256),
       opacity: 0.7,
     });
-  
+    document.getElementById("user-console").classList.remove("invisible");
+
     map.overlayMapTypes.clear();
     map.overlayMapTypes.push(geeMapType);
   }
@@ -92,23 +94,14 @@ async function geocodeLocation(location) {
     }
   }
 
-function streamText(html, element) {
-    let index = 0;
+  function streamText(html, element) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message'); // Add a class to style the message element
-  
-    function addCharacter() {
-      messageElement.innerHTML += html[index];
-      index++;
-  
-      if (index < html.length) {
-        setTimeout(addCharacter, 50); // Adjust the timeout value to control the speed
-      }
-    }
-  
-    addCharacter();
+    messageElement.innerHTML = html;
     element.appendChild(messageElement);
   }
+  
+  
 
   async function describeStats(stats) {
     try {
@@ -121,8 +114,11 @@ function streamText(html, element) {
       });
       const result = await response.json();
   
-      if (result && result.markdown) {
-        const htmlText = await renderMarkdown(result.markdown);
+      if (result && result.description.markdown) {
+        // Remove enclosing double quotes
+        const markdownText = result.description.markdown.replace(/^"|"$/g, '');
+        const converter = new showdown.Converter();
+        const htmlText = converter.makeHtml(markdownText);
         const chatWindow = document.getElementById("chat-window");
         streamText(htmlText, chatWindow);
       } else {
