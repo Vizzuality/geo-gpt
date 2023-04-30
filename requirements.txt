@@ -1,0 +1,11 @@
+openai
+flask
+python-dotenv
+langchain
+gcloud
+earthengine-api
+google-auth
+google-auth-httplib2
+google-api-python-client
+flask_httpauth
+geopy
