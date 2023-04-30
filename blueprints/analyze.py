@@ -47,4 +47,6 @@ def get_land_cover_stats(aoi):
             "area": class_area.getInfo(),
         }
 
-    return stats
+    map_tile_url = land_cover.getMapId()["tile_fetcher"].url_format
+
+    return {"stats": stats, "map_tile_url": map_tile_url}

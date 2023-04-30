@@ -1,5 +1,5 @@
-from flask import Blueprint, request, jsonify
-from blueprints.auth import token_auth
+from flask import Blueprint, request, jsonify, session, render_template
+#from blueprints.auth import token_auth
 from blueprints.geocode import get_bbox
 from blueprints.analyze import get_land_cover_stats
 from blueprints.describe import get_description
@@ -12,13 +12,12 @@ ee.Initialize()
 print("After ee.Initialize()")
 print("Earth Engine initialization in app.py:", ee.data._initialized)
 
-@routes.route('/', methods=['POST'])
-@token_auth.login_required
+@routes.route('/')
 def index():
-    return 'OK'
+    return render_template('index.html')
 
 @routes.route('/geocode', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def geocode():
     data = request.get_json()
     place = data.get("place")
@@ -30,7 +29,7 @@ def geocode():
     return jsonify(bbox)
 
 @routes.route('/analyze', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def analyze():
     data = request.get_json()
     min_lat = data.get("min_lat")
@@ -47,13 +46,13 @@ def analyze():
     return jsonify(stats)
 
 @routes.route('/describe', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def describe():
     data = request.get_json()
 
     if not data:
         return jsonify({"error": "Data is required"}), 400
 
-    response = get_description(data)
+    description = get_description(data)
 
-    return jsonify(response)
+    return jsonify({"description": description})
