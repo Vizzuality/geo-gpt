@@ -1,5 +1,5 @@
 
-**Earth GPT**
+**GeoGPT**
 
   
 
