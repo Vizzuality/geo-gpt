@@ -3,7 +3,7 @@
 
   
 
-Earth GPT is a web application that provides land cover analysis and descriptions based on user-inputted geographic locations. It uses Google Earth Engine and OpenAI GPT-3 to generate comprehensive reports.
+GeoGPT is a web application that provides land cover analysis and descriptions based on user-inputted geographic locations. It uses Google Earth Engine and OpenAI GPT-3 to generate comprehensive reports.
 
   
 
