@@ -86,6 +86,7 @@ async function geocodeLocation(location) {
         console.log(result);
         addGeeLayer(result);
         describeStats(result); // Call describeStats with the result stats
+        localStorage.setItem('analysisResult', JSON.stringify(result)); // Store the result
       } else {
         console.error("Error: Invalid analysis result");
       }
@@ -128,4 +129,18 @@ async function geocodeLocation(location) {
       console.error("Error: Describe request failed", error);
     }
   }
+  
+  document.getElementById('send-a-message').addEventListener('keypress', async function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent the default behavior (line break)
+      const text = event.target.value; // Get the text from the textarea
+      const storedStats = JSON.parse(localStorage.getItem('analysisResult')); // Retrieve the stored stats
+  
+      // Call describeStats with the stored stats and the text from the textarea
+      await describeStats(storedStats, text);
+  
+      // Clear the textarea after the function call
+      event.target.value = '';
+    }
+  });
   
