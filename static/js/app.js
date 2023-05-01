@@ -19,35 +19,7 @@ locationInput.addEventListener("keydown", (event) => {
   }
 });
 
-async function geocodeLocation(location) {
-    try {
-      const response = await fetch("/geocode", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ place: location }),
-      });
-      const result = await response.json();
-  
-      if (result && result.min_lat && result.min_lon && result.max_lat && result.max_lon) {
-        const bounds = new google.maps.LatLngBounds(
-          new google.maps.LatLng(result.min_lat, result.min_lon),
-          new google.maps.LatLng(result.max_lat, result.max_lon)
-        );
-        map.fitBounds(bounds);
-  
-        // Call analyzeArea with the geocoding result
-        analyzeArea(result);
-      } else {
-        console.error("Error: Invalid geocoding result");
-      }
-    } catch (error) {
-      console.error("Error: Geocoding request failed", error);
-    }
-  }
-  
-  function addGeeLayer(result) {
+function addGeeLayer(result) {
     // Add GEE layer to the Google Map
     const geeMapType = new google.maps.ImageMapType({
       getTileUrl: (coord, zoom) => {
@@ -70,15 +42,61 @@ async function geocodeLocation(location) {
     map.overlayMapTypes.clear();
     map.overlayMapTypes.push(geeMapType);
   }
+
+async function geocodeLocation(location) {
+    try {
+      const response = await fetch("/geocode", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ place: location }),
+      });
+      const geojson = await response.json();
   
-  async function analyzeArea(bounds) {
+      if (geojson && (geojson.type === "Polygon" || geojson.type === "MultiPolygon")) {
+        // Wrap the GeoJSON object into a FeatureCollection
+        const geojsonFeatureCollection = {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: {},
+              geometry: geojson
+            }
+          ]
+        };
+  
+        // Create a polygon from the GeoJSON FeatureCollection
+        const polygon = new google.maps.Data();
+        polygon.addGeoJson(geojsonFeatureCollection);
+  
+        // Fit the map to the polygon bounds
+        const bounds = new google.maps.LatLngBounds();
+        polygon.forEach((feature) => {
+          feature.getGeometry().forEachLatLng((latLng) => bounds.extend(latLng));
+        });
+        map.fitBounds(bounds);
+  
+        // Call analyzeArea with the GeoJSON object
+        analyzeArea({ geometry: geojson });
+        document.getElementById("user-console").classList.remove("invisible");
+      } else {
+        console.error("Error: Invalid geocoding result");
+      }
+    } catch (error) {
+      console.error("Error: Geocoding request failed", error);
+    }
+  }
+  
+  async function analyzeArea(geojson) {
     try {
       const response = await fetch("/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(bounds),
+        body: JSON.stringify(geojson),
       });
       const result = await response.json();
   
@@ -94,6 +112,7 @@ async function geocodeLocation(location) {
       console.error("Error: Analysis request failed", error);
     }
   }
+  
 
   function streamText(html, element) {
     const messageElement = document.createElement('div');

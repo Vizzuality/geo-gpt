@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, session, render_template
-from blueprints.geocode import get_bbox
+from blueprints.geocode import get_geojson
 from blueprints.analyze import get_land_cover_stats
 from blueprints.describe import get_description
 from blueprints.oauth import login_required
@@ -25,33 +25,32 @@ def geocode():
 
     if not place:
         return jsonify({"error": "Place is required"}), 400
-    
-    bbox = get_bbox(place)
-    if not bbox:
-            return jsonify({"error": "Unable to get bounding box"}), 400
 
-    return jsonify(bbox)
+    geojson = get_geojson(place)
+    if not geojson:
+        return jsonify({"error": "Unable to get the geometry for the given place"}), 400
+
+    return jsonify(geojson)
+
 
 
 @routes.route('/analyze', methods=['POST'])
 @login_required
 def analyze():
     data = request.get_json()
-    min_lat = data.get("min_lat")
-    max_lat = data.get("max_lat")
-    min_lon = data.get("min_lon")
-    max_lon = data.get("max_lon")
+    geojson = data.get("geometry")
 
-    if not all([min_lat, max_lat, min_lon, max_lon]):
-        return jsonify({"error": "All coordinates (min_lat, max_lat, min_lon, max_lon) are required"}), 400
+    if not geojson:
+        return jsonify({"error": "GeoJSON geometry is required"}), 400
 
-    aoi = ee.Geometry.Rectangle([min_lon, min_lat, max_lon, max_lat])
+    aoi = ee.Geometry.Polygon(geojson["coordinates"])
     result = get_land_cover_stats(aoi)
 
     if "error" in result:
         return jsonify({"error": "Unable to analyze the area"}), 400
 
     return jsonify(result)
+
 
 @routes.route('/describe', methods=['POST'])
 @login_required
