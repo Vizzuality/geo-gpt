@@ -27,6 +27,8 @@ def bbox_to_xyz(min_lon, max_lon, min_lat, max_lat, z):
 
 def get_bbox(place, size=10):
     location = geolocator.geocode(place)
+    if not location:
+        return None
     lat, lon = location.latitude, location.longitude
     lat_delta = distance.distance(kilometers=size).destination((lat, lon), bearing=0).latitude - lat
     lon_delta = distance.distance(kilometers=size).destination((lat, lon), bearing=90).longitude - lon

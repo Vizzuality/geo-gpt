@@ -25,9 +25,13 @@ def geocode():
 
     if not place:
         return jsonify({"error": "Place is required"}), 400
-
+    
     bbox = get_bbox(place)
+    if not bbox:
+            return jsonify({"error": "Unable to get bounding box"}), 400
+
     return jsonify(bbox)
+
 
 @routes.route('/analyze', methods=['POST'])
 @login_required
@@ -43,6 +47,8 @@ def analyze():
 
     aoi = ee.Geometry.Rectangle([min_lon, min_lat, max_lon, max_lat])
     stats = get_land_cover_stats(aoi)
+    if not stats:
+        return jsonify({"error": "Unable to get land cover stats"}), 400
 
     return jsonify(stats)
 
@@ -58,5 +64,7 @@ def describe():
     text = data.get('text')
 
     description = get_description(stats, text)
+    if not description:
+        return jsonify({"error": "Unable to generate description"}), 400
 
     return jsonify({"description": description})
