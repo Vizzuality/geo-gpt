@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify, session, render_template
-#from blueprints.auth import token_auth
 from blueprints.geocode import get_bbox
 from blueprints.analyze import get_land_cover_stats
 from blueprints.describe import get_description

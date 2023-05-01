@@ -1,6 +1,5 @@
 from flask import Flask, Blueprint
 from blueprints.routes import routes
-from blueprints.auth import auth
 from dotenv import load_dotenv
 from blueprints.analyze import analyze_bp
 from blueprints.describe import describe_bp
