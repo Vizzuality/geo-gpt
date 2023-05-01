@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify, session, render_template
 from blueprints.geocode import get_bbox
 from blueprints.analyze import get_land_cover_stats
 from blueprints.describe import get_description
+from blueprints.oauth import login_required
 import ee
 
 routes = Blueprint('routes', __name__)
@@ -13,6 +14,7 @@ print("After ee.Initialize()")
 print("Earth Engine initialization in app.py:", ee.data._initialized)
 
 @routes.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
