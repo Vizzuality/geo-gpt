@@ -19,7 +19,7 @@ def index():
     return render_template('index.html')
 
 @routes.route('/geocode', methods=['POST'])
-#@token_auth.login_required
+@login_required
 def geocode():
     data = request.get_json()
     place = data.get("place")
@@ -31,7 +31,7 @@ def geocode():
     return jsonify(bbox)
 
 @routes.route('/analyze', methods=['POST'])
-#@token_auth.login_required
+@login_required
 def analyze():
     data = request.get_json()
     min_lat = data.get("min_lat")
@@ -48,6 +48,7 @@ def analyze():
     return jsonify(stats)
 
 @routes.route('/describe', methods=['POST'])
+@login_required
 def describe():
     data = request.get_json()
 
