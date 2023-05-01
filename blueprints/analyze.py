@@ -29,24 +29,27 @@ def get_land_cover_stats(aoi):
 
     stats = {}
 
-    for class_info in legend["items"]:
-        class_id = class_info['id']
-        class_color = ee.Image.constant(hex_to_rgb(class_info['color'])).toFloat()
+    try:
+        for class_info in legend["items"]:
+            class_id = class_info['id']
+            class_color = ee.Image.constant(hex_to_rgb(class_info['color'])).toFloat()
 
-        mask = land_cover.eq(class_color).reduce(ee.Reducer.allNonZero())
+            mask = land_cover.eq(class_color).reduce(ee.Reducer.allNonZero())
 
-        class_area = mask.reduceRegion(
-            reducer=ee.Reducer.sum(),
-            geometry=aoi,
-            scale=10,
-            maxPixels=1e9
-        )
+            class_area = mask.reduceRegion(
+                reducer=ee.Reducer.sum(),
+                geometry=aoi,
+                scale=10,
+                maxPixels=1e9
+            )
 
-        stats[class_id] = {
-            "name": class_info["name"],
-            "area": class_area.getInfo(),
-        }
+            stats[class_id] = {
+                "name": class_info["name"],
+                "area": class_area.getInfo(),
+            }
 
-    map_tile_url = land_cover.getMapId()["tile_fetcher"].url_format
+        map_tile_url = land_cover.getMapId()["tile_fetcher"].url_format
 
-    return {"stats": stats, "map_tile_url": map_tile_url}
+        return {"stats": stats, "map_tile_url": map_tile_url}
+    except Exception as e:
+        return {"error": str(e)}

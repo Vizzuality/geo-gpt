@@ -46,11 +46,12 @@ def analyze():
         return jsonify({"error": "All coordinates (min_lat, max_lat, min_lon, max_lon) are required"}), 400
 
     aoi = ee.Geometry.Rectangle([min_lon, min_lat, max_lon, max_lat])
-    stats = get_land_cover_stats(aoi)
-    if not stats:
-        return jsonify({"error": "Unable to get land cover stats"}), 400
+    result = get_land_cover_stats(aoi)
 
-    return jsonify(stats)
+    if "error" in result:
+        return jsonify({"error": "Unable to analyze the area"}), 400
+
+    return jsonify(result)
 
 @routes.route('/describe', methods=['POST'])
 @login_required
@@ -63,8 +64,9 @@ def describe():
     stats = data.get('stats')
     text = data.get('text')
 
-    description = get_description(stats, text)
-    if not description:
+    result = get_description(stats, text)
+    
+    if "error" in result:
         return jsonify({"error": "Unable to generate description"}), 400
 
-    return jsonify({"description": description})
+    return jsonify({"description": result})
