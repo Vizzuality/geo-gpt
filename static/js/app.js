@@ -104,14 +104,14 @@ async function geocodeLocation(location) {
   
   
 
-  async function describeStats(stats) {
+  async function describeStats(stats, text = null) {
     try {
       const response = await fetch("/describe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(stats),
+        body: JSON.stringify({ stats, text }),
       });
       const result = await response.json();
   
@@ -130,6 +130,7 @@ async function geocodeLocation(location) {
     }
   }
   
+
   document.getElementById('send-a-message').addEventListener('keypress', async function (event) {
     if (event.key === 'Enter') {
       event.preventDefault(); // Prevent the default behavior (line break)

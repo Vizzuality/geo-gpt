@@ -46,13 +46,15 @@ def analyze():
     return jsonify(stats)
 
 @routes.route('/describe', methods=['POST'])
-#@token_auth.login_required
 def describe():
     data = request.get_json()
 
     if not data:
         return jsonify({"error": "Data is required"}), 400
 
-    description = get_description(data)
+    stats = data.get('stats')
+    text = data.get('text')
+
+    description = get_description(stats, text)
 
     return jsonify({"description": description})
