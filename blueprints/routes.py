@@ -4,12 +4,24 @@ from blueprints.analyze import get_land_cover_stats
 from blueprints.describe import get_description
 from blueprints.oauth import login_required
 import ee
+import json
+import os
 
 routes = Blueprint('routes', __name__)
 
 print("Before ee.Initialize()")
-ee.Initialize()
+
+service_account_key_path = "/home/ubuntu/shared/google_service.json"
+
+with open(service_account_key_path) as f:
+    service_account_info = json.load(f)
+
+credentials = ee.ServiceAccountCredentials(service_account_info['client_email'], service_account_key_path)
+ee.Initialize(credentials)
+
+
 print("After ee.Initialize()")
+
 print("Earth Engine initialization in app.py:", ee.data._initialized)
 
 @routes.route('/')
