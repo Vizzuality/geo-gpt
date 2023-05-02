@@ -141,7 +141,7 @@ async function geocodeLocation(location) {
   }
     
   async function describeStats(stats, text = null) {
-    message = `-----I must explain the data`;
+    message = `-----I must describe the data and answer questions`;
     streamText(message, chatWindow, "loader");
     try {
       const response = await fetch("/describe", {
@@ -183,7 +183,7 @@ async function geocodeLocation(location) {
       event.preventDefault(); // Prevent the default behavior (line break)
       const text = event.target.value; // Get the text from the textarea
       const storedStats = JSON.parse(localStorage.getItem('analysisResult')); // Retrieve the stored stats
-  
+      streamText(text, chatWindow, "user");
       // Call describeStats with the stored stats and the text from the textarea
       await describeStats(storedStats, text);
       console.log(JSON.stringify({ storedStats, text }))
@@ -275,4 +275,23 @@ async function geocodeLocation(location) {
     // Start the typewriter effect
     typeWriter();
   }
+
+  document.getElementById("logout").addEventListener("click", async () => {
+    // Perform the logout
+    const response = await fetch("/logout", {
+      method: "GET",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    // Redirect to the index page
+    if (response.ok) {
+      const data = await response.json();
+      window.location.replace(data.redirect_url);
+    } else {
+      console.error("Logout failed.");
+    }
+  });
   

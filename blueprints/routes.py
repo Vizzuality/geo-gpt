@@ -17,6 +17,10 @@ print("Earth Engine initialization in app.py:", ee.data._initialized)
 def index():
     return render_template('index.html')
 
+# @routes.route('/login')
+# def login():
+#     return render_template('login.html')
+
 @routes.route('/geocode', methods=['POST'])
 @login_required
 def geocode():

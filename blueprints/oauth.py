@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, redirect, url_for, session, make_response
-from flask_login import login_required, login_user, UserMixin
+from flask_login import login_required, login_user, UserMixin, logout_user
 from flask_jwt_extended import jwt_required, create_access_token
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
@@ -17,6 +17,14 @@ def init_oauth_bp(login_manager):
     @login_manager.user_loader
     def load_user(user_id):
         return User(user_id)
+    
+@oauth_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    response = make_response(jsonify({"redirect_url": url_for("routes.index")}))
+    response.delete_cookie("access_token")
+    return response
     
 @oauth_bp.route("/authorize")
 def authorize():
