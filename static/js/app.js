@@ -24,8 +24,8 @@ locationInput.addEventListener("keydown", (event) => {
 
 function addGeeLayer(result) {
     // Add GEE layer to the Google Map
-    text = `-----I must add the data layer to the map`;
-      streamText(text, chatWindow, "system");
+    message = `-----I must add the data layer to the map`;
+      streamText(message, chatWindow, "system");
 
     if (!result || !result.map_tile_url) {
         console.error("Result object or map_tile_url is undefined:", result);
@@ -65,12 +65,12 @@ async function geocodeLocation(location) {
         body: JSON.stringify({ place: location }),
       });
 
-      text = `<b>New location: ${location}</b>`;
-      streamText(text, chatWindow, "user");
+      message = `<b>New location: ${location}</b>`;
+      streamText(message, chatWindow, "user");
       const geojson = await response.json();
-      text = `-----I must set the map viewport over: ${location}`;
-      streamText(text, chatWindow, "loader");
-      text = `--Done`;
+      message = `-----I must set the map viewport over: ${location}`;
+      streamText(message, chatWindow, "loader");
+      message = `--Done`;
       if (geojson && (geojson.type === "Polygon" || geojson.type === "MultiPolygon")) {
         // Wrap the GeoJSON object into a FeatureCollection
         const geojsonFeatureCollection = {
@@ -88,8 +88,8 @@ async function geocodeLocation(location) {
         const polygon = new google.maps.Data();
         polygon.addGeoJson(geojsonFeatureCollection);
         
-       text = `-----I must analyze the area`;
-       streamText(text, chatWindow, "loader");
+       message = `-----I must analyze the area`;
+       streamText(message, chatWindow, "loader");
         // Fit the map to the polygon bounds
         const bounds = new google.maps.LatLngBounds();
         polygon.forEach((feature) => {
@@ -141,8 +141,8 @@ async function geocodeLocation(location) {
   }
     
   async function describeStats(stats, text = null) {
-    text = `-----I must explain the data`;
-    streamText(text, chatWindow, "loader");
+    message = `-----I must explain the data`;
+    streamText(message, chatWindow, "loader");
     try {
       const response = await fetch("/describe", {
         method: "POST",
@@ -186,6 +186,8 @@ async function geocodeLocation(location) {
   
       // Call describeStats with the stored stats and the text from the textarea
       await describeStats(storedStats, text);
+      console.log(JSON.stringify({ storedStats, text }))
+
   
       // Clear the textarea after the function call
       event.target.value = '';

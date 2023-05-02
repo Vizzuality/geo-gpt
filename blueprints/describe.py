@@ -25,6 +25,8 @@ def get_description(stats, text=None):
                 HumanMessage(content=text)
             ]
         )
+        print("stats:", stats)
+        print("text:", text)
         return {"markdown": response.content}
     
     except Exception as e:
