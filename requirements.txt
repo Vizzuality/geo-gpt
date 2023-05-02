@@ -12,3 +12,5 @@ geopy
 flask-login
 flask-jwt-extended
 google-auth-oauthlib
+shapely
+pyproj

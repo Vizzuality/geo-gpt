@@ -21,6 +21,10 @@ locationInput.addEventListener("keydown", (event) => {
 
 function addGeeLayer(result) {
     // Add GEE layer to the Google Map
+    if (!result || !result.map_tile_url) {
+        console.error("Result object or map_tile_url is undefined:", result);
+        return;
+      }
     const geeMapType = new google.maps.ImageMapType({
       getTileUrl: (coord, zoom) => {
         const scale = 1 << zoom;
@@ -52,6 +56,10 @@ async function geocodeLocation(location) {
         },
         body: JSON.stringify({ place: location }),
       });
+
+      const chatWindow = document.getElementById("chat-window");
+      text = `<b>New location: ${location}</b>`;
+      streamText(text, chatWindow, "user");
       const geojson = await response.json();
   
       if (geojson && (geojson.type === "Polygon" || geojson.type === "MultiPolygon")) {
@@ -114,11 +122,17 @@ async function geocodeLocation(location) {
   }
   
 
-  function streamText(html, element) {
+  function streamText(html, element, origin) {
     const messageElement = document.createElement('div');
-    messageElement.classList.add('message'); // Add a class to style the message element
+    // Add a class to style the message element
+    if (origin === "user") {
+        messageElement.classList.add('bg-gray-800', 'mt-4', 'md:mt-8', 'px-4', 'py-2');
+    } else {
+        messageElement.classList.add('gray-700');
+    }
     messageElement.innerHTML = html;
     element.appendChild(messageElement);
+    element.scrollTop = element.scrollHeight;
   }
   
   
@@ -140,7 +154,7 @@ async function geocodeLocation(location) {
         const converter = new showdown.Converter();
         const htmlText = converter.makeHtml(markdownText);
         const chatWindow = document.getElementById("chat-window");
-        streamText(htmlText, chatWindow);
+        streamText(htmlText, chatWindow, "system");
       } else {
         console.error("Error: Invalid describe result");
       }
