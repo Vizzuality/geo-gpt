@@ -10,6 +10,9 @@ function initMap() {
     });
   }
 
+const chatWindow = document.getElementById("chat-window");
+
+
 // Add event listener to the input field
 const locationInput = document.getElementById("location");
 locationInput.addEventListener("keydown", (event) => {
@@ -21,6 +24,9 @@ locationInput.addEventListener("keydown", (event) => {
 
 function addGeeLayer(result) {
     // Add GEE layer to the Google Map
+    text = `-----I must add the data layer to the map`;
+      streamText(text, chatWindow, "system");
+
     if (!result || !result.map_tile_url) {
         console.error("Result object or map_tile_url is undefined:", result);
         return;
@@ -47,7 +53,6 @@ function addGeeLayer(result) {
     map.overlayMapTypes.push(geeMapType);
   }
 
-const chatWindow = document.getElementById("chat-window");
 async function geocodeLocation(location) {
     changeStateTextField("disabled", "location");
     changeStateTextField("disabled", "send-a-message");
@@ -60,11 +65,12 @@ async function geocodeLocation(location) {
         body: JSON.stringify({ place: location }),
       });
 
-      const chatWindow = document.getElementById("chat-window");
       text = `<b>New location: ${location}</b>`;
       streamText(text, chatWindow, "user");
       const geojson = await response.json();
-  
+      text = `-----I must set the map viewport over: ${location}`;
+      streamText(text, chatWindow, "loader");
+      text = `--Done`;
       if (geojson && (geojson.type === "Polygon" || geojson.type === "MultiPolygon")) {
         // Wrap the GeoJSON object into a FeatureCollection
         const geojsonFeatureCollection = {
@@ -81,7 +87,9 @@ async function geocodeLocation(location) {
         // Create a polygon from the GeoJSON FeatureCollection
         const polygon = new google.maps.Data();
         polygon.addGeoJson(geojsonFeatureCollection);
-  
+        
+       text = `-----I must analyze the area`;
+       streamText(text, chatWindow, "loader");
         // Fit the map to the polygon bounds
         const bounds = new google.maps.LatLngBounds();
         polygon.forEach((feature) => {
@@ -93,13 +101,13 @@ async function geocodeLocation(location) {
         analyzeArea({ geometry: geojson });
         document.getElementById("user-console").classList.remove("invisible");
       } else {
-        console.error("Error: Invalid analysis result");
-        streamText("Error: Invalid analysis result", chatWindow, "system");
+        console.error("I apologize, but I was unable to find the location you mentioned. Please, kindly double-check the information or provide me with more specific details.");
+        streamText("I apologize, but I was unable to find the location you mentioned. Please, kindly double-check the information or provide me with more specific details.", chatWindow, "error");
         changeStateTextField("enabled", "location");    
       }
     } catch (error) {
       console.error("Error: analysis request failed", error);
-      streamText("Error: Invalid analysis result", chatWindow, "system");
+      streamText("I apologize, but I was unable to find the location you mentioned. Please, kindly double-check the information or provide me with more specific details.", chatWindow, "error");
       changeStateTextField("enabled", "location");
     }
   }
@@ -121,18 +129,20 @@ async function geocodeLocation(location) {
         describeStats(result); // Call describeStats with the result stats
         localStorage.setItem('analysisResult', JSON.stringify(result)); // Store the result
       } else {
-      streamText("Error: Invalid analysis result", chatWindow, "system");
-      console.error("Error: Invalid analysis result");
+      streamText("I apologize, but I couldn't analyze that area. Probably there is no relevant data at this moment or the data can be incorrect. We'll address these issues soon.", chatWindow, "error");
+      console.error("I apologize, but I couldn't analyze that area. Probably there is no relevant data at this moment or the data can be incorrect. We'll address these issues soon.");
       changeStateTextField("enabled", "location");
       }
     } catch (error) {
-      streamText("Error: Invalid analysis result", chatWindow, "system");
+      streamText("I apologize, but I couldn't analyze that area. Probably there is no relevant data at this moment or the data can be incorrect. We'll address these issues soon.", chatWindow, "error");
       console.error("Error: Analysis request failed", error);
       changeStateTextField("enabled", "location");
     }
   }
     
   async function describeStats(stats, text = null) {
+    text = `-----I must explain the data`;
+    streamText(text, chatWindow, "loader");
     try {
       const response = await fetch("/describe", {
         method: "POST",
@@ -155,13 +165,13 @@ async function geocodeLocation(location) {
         console.error("Error: Invalid describe result");
         changeStateTextField("enabled", "location");
         changeStateTextField("enabled", "send-a-message");
-        streamText("Error: Invalid describe result", chatWindow, "system");
+        streamText("Error: Invalid describe result", chatWindow, "error");
       }
     } catch (error) {
       console.error("Error: Describe request failed", error);
       changeStateTextField("enabled", "location");
       changeStateTextField("enabled", "send-a-message");
-      streamText("Error: Invalid describe result", chatWindow, "system");
+      streamText("Error: Invalid describe result", chatWindow, "error");
     }
   }
   
@@ -188,25 +198,79 @@ async function geocodeLocation(location) {
     if (state === "enabled") {
       // Enable the text field
       textField.disabled = false;
-      textField.classList.remove("opacity-50", "text-gray-100");
-      textField.classList.remove("cursor-not-allowed");
+      textField.classList.remove('bg-gray-100','border','border-gray-300','text-gray-900','rounded-lg','focus:ring-blue-500','focus:border-blue-500','cursor-not-allowed','dark:bg-gray-700','dark:border-gray-600','dark:placeholder-gray-400','dark:text-gray-400','dark:focus:ring-blue-500','dark:focus:border-blue-500');
     } else {
       // Disable the text field
       textField.disabled = true;
-      textField.classList.add("opacity-50", "text-gray-100");
-      textField.classList.add("cursor-not-allowed");
+      textField.classList.add('bg-gray-100','border','border-gray-300','text-gray-900','rounded-lg','focus:ring-blue-500','focus:border-blue-500','cursor-not-allowed','dark:bg-gray-700','dark:border-gray-600','dark:placeholder-gray-400','dark:text-gray-400','dark:focus:ring-blue-500','dark:focus:border-blue-500');
     }
   }
 
+  let messageQueue = [];
+  let isProcessingMessage = false;
+  
   function streamText(html, element, origin) {
+    // Add the message to the queue
+    messageQueue.push({ html, element, origin });
+  
+    // If not currently processing a message, start processing the queue
+    if (!isProcessingMessage) {
+      processMessageQueue();
+    }
+  }
+  
+  function processMessageQueue() {
+    if (messageQueue.length === 0 && !isProcessingMessage) {
+      return;
+    }
+  
+    if (isProcessingMessage) {
+      return;
+    }
+  
+    isProcessingMessage = true;
+    const { html, element, origin } = messageQueue.shift();
     const messageElement = document.createElement('div');
+    let textPosition = 0;
+    const blinkerId = `blinker-${Date.now()}`;
+  
+    // Remove the previous blinker
+    const previousBlinker = document.querySelector(`[data-blinker]`);
+    if (previousBlinker) {
+      previousBlinker.remove();
+    }
+  
     // Add a class to style the message element
     if (origin === "user") {
-        messageElement.classList.add('bg-gray-800', 'mt-4', 'md:mt-8', 'px-4', 'py-2');
+      messageElement.classList.add('bg-gray-800', 'mt-4', 'md:mt-8', 'px-4', 'py-2');
+    } else if (origin === "error"){
+        messageElement.classList.add('gray-700', 'py-0', 'text-red-400');
     } else {
-        messageElement.classList.add('gray-700', 'py-4');
+        messageElement.classList.add('gray-700', 'py-0');
     }
-    messageElement.innerHTML = html;
     element.appendChild(messageElement);
-    element.scrollTop = element.scrollHeight;
+  
+    function typeWriter() {
+      if (textPosition < html.length) {
+        messageElement.innerHTML = html.substring(0, textPosition + 1) + `<span data-blinker="${blinkerId}" class="blinking">\u25ae</span>`;
+        textPosition++;
+        element.scrollTop = element.scrollHeight;
+        setTimeout(typeWriter, 3); // Adjust the typing speed here
+      } else {
+        isProcessingMessage = false;
+  
+        // Remove the last blinker only if the origin is not "loader" and there are no more messages in the queue
+        if (origin !== "loader" && messageQueue.length === 0) {
+          const lastBlinker = document.querySelector(`[data-blinker]`);
+          if (lastBlinker) {
+            lastBlinker.remove();
+          }
+        }
+        processMessageQueue();
+      }
+    }
+  
+    // Start the typewriter effect
+    typeWriter();
   }
+  

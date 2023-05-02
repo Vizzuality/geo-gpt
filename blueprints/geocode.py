@@ -44,7 +44,6 @@ def get_geojson(place):
     url = f"https://nominatim.openstreetmap.org/reverse?format=geojson&osm_type={osm_type}&osm_id={osm_id}&polygon_geojson=1"
     response = requests.get(url)
     data = response.json()
-    print(data)
 
     if data['features']:
         region_geometry = data['features'][0]['geometry']
