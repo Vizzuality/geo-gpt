@@ -47,7 +47,10 @@ function addGeeLayer(result) {
     map.overlayMapTypes.push(geeMapType);
   }
 
+const chatWindow = document.getElementById("chat-window");
 async function geocodeLocation(location) {
+    changeStateTextField("disabled", "location");
+    changeStateTextField("disabled", "send-a-message");
     try {
       const response = await fetch("/geocode", {
         method: "POST",
@@ -90,10 +93,14 @@ async function geocodeLocation(location) {
         analyzeArea({ geometry: geojson });
         document.getElementById("user-console").classList.remove("invisible");
       } else {
-        console.error("Error: Invalid geocoding result");
+        console.error("Error: Invalid analysis result");
+        streamText("Error: Invalid analysis result", chatWindow, "system");
+        changeStateTextField("enabled", "location");    
       }
     } catch (error) {
-      console.error("Error: Geocoding request failed", error);
+      console.error("Error: analysis request failed", error);
+      streamText("Error: Invalid analysis result", chatWindow, "system");
+      changeStateTextField("enabled", "location");
     }
   }
   
@@ -114,29 +121,17 @@ async function geocodeLocation(location) {
         describeStats(result); // Call describeStats with the result stats
         localStorage.setItem('analysisResult', JSON.stringify(result)); // Store the result
       } else {
-        console.error("Error: Invalid analysis result");
+      streamText("Error: Invalid analysis result", chatWindow, "system");
+      console.error("Error: Invalid analysis result");
+      changeStateTextField("enabled", "location");
       }
     } catch (error) {
+      streamText("Error: Invalid analysis result", chatWindow, "system");
       console.error("Error: Analysis request failed", error);
+      changeStateTextField("enabled", "location");
     }
   }
-  
-
-  function streamText(html, element, origin) {
-    const messageElement = document.createElement('div');
-    // Add a class to style the message element
-    if (origin === "user") {
-        messageElement.classList.add('bg-gray-800', 'mt-4', 'md:mt-8', 'px-4', 'py-2');
-    } else {
-        messageElement.classList.add('gray-700');
-    }
-    messageElement.innerHTML = html;
-    element.appendChild(messageElement);
-    element.scrollTop = element.scrollHeight;
-  }
-  
-  
-
+    
   async function describeStats(stats, text = null) {
     try {
       const response = await fetch("/describe", {
@@ -153,19 +148,28 @@ async function geocodeLocation(location) {
         const markdownText = result.description.markdown.replace(/^"|"$/g, '');
         const converter = new showdown.Converter();
         const htmlText = converter.makeHtml(markdownText);
-        const chatWindow = document.getElementById("chat-window");
         streamText(htmlText, chatWindow, "system");
+        changeStateTextField("enabled", "location");
+        changeStateTextField("enabled", "send-a-message");
       } else {
         console.error("Error: Invalid describe result");
+        changeStateTextField("enabled", "location");
+        changeStateTextField("enabled", "send-a-message");
+        streamText("Error: Invalid describe result", chatWindow, "system");
       }
     } catch (error) {
       console.error("Error: Describe request failed", error);
+      changeStateTextField("enabled", "location");
+      changeStateTextField("enabled", "send-a-message");
+      streamText("Error: Invalid describe result", chatWindow, "system");
     }
   }
   
 
   document.getElementById('send-a-message').addEventListener('keypress', async function (event) {
     if (event.key === 'Enter') {
+      changeStateTextField("disabled", "send-a-message");
+      
       event.preventDefault(); // Prevent the default behavior (line break)
       const text = event.target.value; // Get the text from the textarea
       const storedStats = JSON.parse(localStorage.getItem('analysisResult')); // Retrieve the stored stats
@@ -178,3 +182,31 @@ async function geocodeLocation(location) {
     }
   });
   
+  function changeStateTextField(state, fieldId) {
+    const textField = document.getElementById(fieldId);
+  
+    if (state === "enabled") {
+      // Enable the text field
+      textField.disabled = false;
+      textField.classList.remove("opacity-50", "text-gray-100");
+      textField.classList.remove("cursor-not-allowed");
+    } else {
+      // Disable the text field
+      textField.disabled = true;
+      textField.classList.add("opacity-50", "text-gray-100");
+      textField.classList.add("cursor-not-allowed");
+    }
+  }
+
+  function streamText(html, element, origin) {
+    const messageElement = document.createElement('div');
+    // Add a class to style the message element
+    if (origin === "user") {
+        messageElement.classList.add('bg-gray-800', 'mt-4', 'md:mt-8', 'px-4', 'py-2');
+    } else {
+        messageElement.classList.add('gray-700', 'py-4');
+    }
+    messageElement.innerHTML = html;
+    element.appendChild(messageElement);
+    element.scrollTop = element.scrollHeight;
+  }
