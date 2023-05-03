@@ -54,7 +54,6 @@ function addGeeLayer(result) {
 
 async function geocodeLocation(location) {
     changeStateTextField("disabled", "location");
-    changeStateTextField("disabled", "send-a-message");
     try {
       const response = await fetch("/geocode", {
         method: "POST",
@@ -294,3 +293,6 @@ async function geocodeLocation(location) {
     }
   });
   
+  document.addEventListener("DOMContentLoaded", function() {
+    changeStateTextField("disabled", "send-a-message");
+  });
