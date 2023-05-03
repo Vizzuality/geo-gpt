@@ -2,7 +2,7 @@
 module.exports = {
   content: [
     "./templates/**/*.html",
-    "./static/src/**/*.js"
+    "./static/**/*.js"
   ],
   theme: {
     extend: {
@@ -25,4 +25,3 @@ module.exports = {
     require('@tailwindcss/typography')
   ]
 }
-    

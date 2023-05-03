@@ -16,10 +16,10 @@ service_account_key_path = "/home/ubuntu/shared/google_service.json"
 # with open(service_account_key_path) as f:
 #     service_account_info = json.load(f)
 
-# credentials = ee.ServiceAccountCredentials(service_account_info['client_email'], service_account_key_path)
-# ee.Initialize(credentials)
+credentials = ee.ServiceAccountCredentials(service_account_info['client_email'], service_account_key_path)
+ee.Initialize(credentials)
 
-ee.Initialize()
+#ee.Initialize()
 print("After ee.Initialize()")
 
 print("Earth Engine initialization in app.py:", ee.data._initialized)

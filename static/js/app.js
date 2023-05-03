@@ -243,11 +243,11 @@ async function geocodeLocation(location) {
   
     // Add a class to style the message element
     if (origin === "user") {
-      messageElement.classList.add('bg-gray-800', 'mt-4', 'md:mt-8', 'px-4', 'py-2');
+      messageElement.classList.add('bg-gray-800', 'mt-4', 'md:mt-8', 'px-4', 'py-2', 'prose', 'prose-invert', 'max-w-none');
     } else if (origin === "error"){
         messageElement.classList.add('gray-700', 'py-0', 'text-red-400');
     } else {
-        messageElement.classList.add('gray-700', 'py-0');
+        messageElement.classList.add('gray-700', 'py-0', 'prose', 'prose-invert', 'text-white', 'max-w-none');
     }
     element.appendChild(messageElement);
   
