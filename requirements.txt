@@ -3,7 +3,7 @@ flask
 python-dotenv
 langchain
 gcloud
-earthengine-api
+earthengine-api==0.1.352
 google-auth
 google-auth-httplib2
 google-api-python-client

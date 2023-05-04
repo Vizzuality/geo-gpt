@@ -11,7 +11,9 @@ routes = Blueprint('routes', __name__)
 
 print("Before ee.Initialize()")
 
-service_account_key_path = "/home/ubuntu/shared/google_service.json"
+# service_account_key_path = "/home/ubuntu/shared/google_service.json"
+
+service_account_key_path = "./privatekey.json"
 
 with open(service_account_key_path) as f:
     service_account_info = json.load(f)
@@ -25,7 +27,7 @@ print("After ee.Initialize()")
 print("Earth Engine initialization in app.py:", ee.data._initialized)
 
 @routes.route('/')
-@login_required
+#@login_required
 def index():
     return render_template('index.html')
 
@@ -34,7 +36,7 @@ def index():
 #     return render_template('login.html')
 
 @routes.route('/geocode', methods=['POST'])
-@login_required
+#@login_required
 def geocode():
     data = request.get_json()
     place = data.get("place")
@@ -51,7 +53,7 @@ def geocode():
 
 
 @routes.route('/analyze', methods=['POST'])
-@login_required
+#@login_required
 def analyze():
     data = request.get_json()
     geojson = data.get("geometry")
@@ -69,7 +71,7 @@ def analyze():
 
 
 @routes.route('/describe', methods=['POST'])
-@login_required
+# @login_required
 def describe():
     data = request.get_json()
 
