@@ -111,6 +111,7 @@ async function geocodeLocation(location) {
   }
   
   async function analyzeArea(geojson) {
+    console.log(JSON.stringify(geojson))
     try {
       const response = await fetch("/analyze", {
         method: "POST",
