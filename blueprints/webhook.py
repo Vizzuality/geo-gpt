@@ -3,6 +3,7 @@ from flask import Flask, request, Blueprint, app
 import hmac
 import hashlib
 import logging
+from config import webhook_secret
 
 webhook_bp = Blueprint("webhook", __name__)
 
@@ -24,7 +25,7 @@ def handle_webhook():
         logging.info("Unsupported signature type")
         return 'Unsupported signature type', 400
 
-    secret = app.config['GITHUB_WEBHOOK_SECRET']
+    secret = webhook_secret
     mac = hmac.new(secret.encode('utf-8'), request.data, hashlib.sha1)
     expected_signature = f'sha1={mac.hexdigest()}'
     if not hmac.compare_digest(signature, expected_signature):
