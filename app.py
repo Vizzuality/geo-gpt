@@ -9,6 +9,7 @@ from blueprints.oauth import oauth_bp
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 from blueprints.oauth import init_oauth_bp
+from blueprints.webhook import webhook_bp
 
 import os
 
@@ -31,6 +32,7 @@ app.register_blueprint(analyze_bp)
 app.register_blueprint(describe_bp)
 app.register_blueprint(geocode_bp)
 app.register_blueprint(oauth_bp)
+app.register_blueprint(webhook_bp)
 
 if __name__ == '__main__':
     app.run()
