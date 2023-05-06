@@ -48,8 +48,8 @@ def handle_webhook():
 def deploy():
     os.environ['GIT_SSH_COMMAND'] = '/usr/bin/ssh'
     git = Command('/usr/bin/git')
-    pip = Command('pip')
-    yarn = Command('yarn')
+    pip = Command('/home/ubuntu/.pyenv/versions/3.11.1/bin/pip')
+    yarn = Command('/home/ubuntu/.nvm/versions/node/v18.16.0/bin/yarn')
     sudo = Command('sudo')
 
     commands = [
