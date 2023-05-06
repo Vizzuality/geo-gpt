@@ -65,9 +65,9 @@ def deploy():
 
     for cmd, args in commands:
         try:
-            cmd(*args, _err_to_out=True, _out=app.logger.info, _bg_exc=False)
+            cmd(*args, _err_to_out=True, _out=logging.info, _bg_exc=False)
         except sh.ErrorReturnCode as e:
-            logging.info(f"Command '{cmd} {' '.join(args)}' failed with error: {e.stderr}")
+            logging.error(f"Command '{cmd} {' '.join(args)}' failed with error: {e.stderr}")
             return
 
     logging.info("Deployment completed successfully")
