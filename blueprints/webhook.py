@@ -4,8 +4,9 @@ import hmac
 import hashlib
 import logging
 from config import webhook_secret
-from sh import git, pip, yarn, sudo
+from sh import Command
 import sh
+import os
 
 webhook_bp = Blueprint("webhook", __name__)
 
@@ -46,7 +47,11 @@ def handle_webhook():
 
 def deploy():
     os.environ['GIT_SSH_COMMAND'] = '/usr/bin/ssh'
-    
+    git = Command('/usr/bin/git')
+    pip = Command('pip')
+    yarn = Command('yarn')
+    sudo = Command('sudo')
+
     commands = [
         (git, ['fetch', 'origin', 'main']),
         (git, ['reset', '--hard', 'origin/main']),
