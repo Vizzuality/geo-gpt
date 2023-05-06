@@ -8,6 +8,21 @@ GeoGPT is a web application that provides land cover analysis and descriptions b
  ## Using docker
  Download and install docker:  https://docs.docker.com/get-docker/
 
+   **Environment and secrets**
+
+Copy your google_service.json into your app dir.
+
+Create your .env in your app dir, it should look like:
+
+    FLASK_APP=app.py
+    FLASK_ENV=development
+    SECRET_KEY=your_flask_sectret_key; any hex(16)
+    OAUTHLIB_INSECURE_TRANSPORT=1
+    OPENAI_API_KEY=your_open_ai_api_key
+    FLASK_DEBUG=1
+    GEE_SERVICE_ACCOUNT_KEYPATH=./google_service.json
+
+
 Run:
 
     docker build -t earthgpt .
