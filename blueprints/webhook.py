@@ -44,10 +44,10 @@ def handle_webhook():
 
 def deploy():
     commands = [
-        ['git', 'fetch', 'origin', 'main'],
-        ['git', 'reset', '--hard', 'origin/main'],
-        ['git', 'clean', '-f', '-d', '-x', '--exclude=.env', '--exclude=client_secret.json'],
-        ['git', 'pull', 'origin', 'main', '--force'],
+        ['/usr/bin/git', 'fetch', 'origin', 'main'],
+        ['/usr/bin/git', 'reset', '--hard', 'origin/main'],
+        ['/usr/bin/git', 'clean', '-f', '-d', '-x', '--exclude=.env', '--exclude=client_secret.json'],
+        ['/usr/bin/git', 'pull', 'origin', 'main', '--force'],
         ['pip', 'install', '-r', 'requirements.txt'],
         ['yarn', 'install'],
         ['yarn', 'build'],
