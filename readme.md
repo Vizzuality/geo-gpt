@@ -86,8 +86,6 @@ The requirements.txt file includes the following dependencies:
     google-auth-oauthlib
     shapely
     GitPython
-    hmac
-    hashlib
     logging
     pyproj
     
