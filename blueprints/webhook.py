@@ -50,7 +50,7 @@ def deploy():
     git = Command('/usr/bin/git')
     pip = Command('/home/ubuntu/.pyenv/versions/3.11.1/bin/pip')
     yarn = Command('/home/ubuntu/.nvm/versions/node/v18.16.0/bin/yarn')
-    sudo = Command('sudo')
+    sudo = Command('/usr/bin/sudo')
 
     commands = [
         (git, ['fetch', 'origin', 'main']),
