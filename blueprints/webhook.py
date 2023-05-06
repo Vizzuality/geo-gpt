@@ -4,6 +4,8 @@ import hmac
 import hashlib
 import logging
 from config import webhook_secret
+from sh import git, pip, yarn, sudo
+import sh
 
 webhook_bp = Blueprint("webhook", __name__)
 
@@ -43,21 +45,24 @@ def handle_webhook():
     return 'Webhook received', 200
 
 def deploy():
-    commands = [
-        ['/usr/bin/git', 'fetch', 'origin', 'main'],
-        ['/usr/bin/git', 'reset', '--hard', 'origin/main'],
-        ['/usr/bin/git', 'clean', '-f', '-d', '-x', '--exclude=.env', '--exclude=client_secret.json'],
-        ['/usr/bin/git', 'pull', 'origin', 'main', '--force'],
-        ['pip', 'install', '-r', 'requirements.txt'],
-        ['yarn', 'install'],
-        ['yarn', 'build'],
-        ['sudo', 'systemctl', 'restart', 'geo-gpt.service']
-    ]
     os.environ['GIT_SSH_COMMAND'] = '/usr/bin/ssh'
-    for command in commands:
-        result = subprocess.run(command, capture_output=True, text=True)
-        if result.returncode != 0:
-            logging.error(f"Command '{' '.join(command)}' failed with error: {result.stderr}")
+    
+    commands = [
+        (git, ['fetch', 'origin', 'main']),
+        (git, ['reset', '--hard', 'origin/main']),
+        (git, ['clean', '-f', '-d', '-x', '--exclude=.env', '--exclude=client_secret.json']),
+        (git, ['pull', 'origin', 'main', '--force']),
+        (pip, ['install', '-r', 'requirements.txt']),
+        (yarn, ['install']),
+        (yarn, ['build']),
+        (sudo, ['systemctl', 'restart', 'geo-gpt.service'])
+    ]
+
+    for cmd, args in commands:
+        try:
+            cmd(*args, _err_to_out=True, _out=app.logger.info, _bg_exc=False)
+        except sh.ErrorReturnCode as e:
+            app.logger.error(f"Command '{cmd} {' '.join(args)}' failed with error: {e.stderr}")
             return
 
-    logging.info("Deployment completed successfully")
+    app.logger.info("Deployment completed successfully")

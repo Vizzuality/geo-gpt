@@ -16,3 +16,4 @@ shapely
 pyproj
 GitPython
 logging
+sh
