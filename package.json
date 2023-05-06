@@ -12,10 +12,12 @@
   },
   "scripts": {
     "build": "postcss static/css/styles.scss -o static/css/styles.css",
-    "watch": "postcss-watch-folder static/css -x .scss -i -o static/css"
+    "watch": "postcss static/css/styles.scss -x .scss -w -o static/css/styles.css"
+
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
+    "concurrently": "^8.0.1",
     "marked": "^4.3.0",
     "postcss": "^8.4.23",
     "postcss-cli": "^10.1.0",

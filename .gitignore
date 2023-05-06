@@ -1,3 +1,13 @@
+google_service.json
+# Docker-related
+.dockerignore
+*.dockerignore
+# Flask-related
+instance/
+
+# Tailwind-related
+node_modules/
+public/build/
 .DS_Store
 .env
 logs/
