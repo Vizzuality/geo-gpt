@@ -15,6 +15,7 @@ import os
 load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
+app.config["ENV"] = os.environ.get("FLASK_ENV", "production")
 
 app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "supersecretjwtkey")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 86400  # Token expires after 1 day

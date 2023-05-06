@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, session, render_template
 from blueprints.geocode import get_geojson
 from blueprints.analyze import get_land_cover_stats
 from blueprints.describe import get_description
-from blueprints.oauth import login_required
+from blueprints.conditional_login_required import conditional_login_required
 import ee
 import json
 import os
@@ -24,7 +24,7 @@ print("After ee.Initialize()")
 print("Earth Engine initialization in app.py:", ee.data._initialized)
 
 @routes.route('/')
-@login_required
+@conditional_login_required
 def index():
     return render_template('index.html')
 
@@ -33,7 +33,7 @@ def index():
 #     return render_template('login.html')
 
 @routes.route('/geocode', methods=['POST'])
-@login_required
+@conditional_login_required
 def geocode():
     data = request.get_json()
     place = data.get("place")
@@ -50,7 +50,7 @@ def geocode():
 
 
 @routes.route('/analyze', methods=['POST'])
-@login_required
+@conditional_login_required
 def analyze():
     data = request.get_json()
     geojson = data.get("geometry")
@@ -68,7 +68,7 @@ def analyze():
 
 
 @routes.route('/describe', methods=['POST'])
-@login_required
+@conditional_login_required
 def describe():
     data = request.get_json()
 

@@ -5,6 +5,7 @@ import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import os
+from flask_login import login_required
 
 oauth_bp = Blueprint("oauth", __name__)
 
