@@ -1,11 +1,11 @@
-from flask import Blueprint, request, jsonify, session, render_template
+import ee
+import json
+import os
+from flask import Blueprint, request, jsonify, session, render_template, send_from_directory, current_app
 from blueprints.geocode import get_geojson
 from blueprints.analyze import get_land_cover_stats
 from blueprints.describe import get_description
 from blueprints.conditional_login_required import conditional_login_required
-import ee
-import json
-import os
 from config import service_account_key_path
 
 routes = Blueprint('routes', __name__)
@@ -22,6 +22,10 @@ ee.Initialize(credentials)
 print("After ee.Initialize()")
 
 print("Earth Engine initialization in app.py:", ee.data._initialized)
+
+@routes.route("/robots.txt")
+def robots_txt():
+    return send_from_directory(current_app.root_path, "robots.txt")
 
 @routes.route('/')
 @conditional_login_required
