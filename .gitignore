@@ -1,15 +1,17 @@
+# common
+.DS_Store
+.env
+#Google services
 google_service.json
 # Docker-related
 .dockerignore
 *.dockerignore
 # Flask-related
 instance/
-
 # Tailwind-related
 node_modules/
 public/build/
-.DS_Store
-.env
+package-lock.json
 logs/
 #auth
 client_secret.json

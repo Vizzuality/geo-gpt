@@ -53,7 +53,7 @@ def deploy():
         ['yarn', 'build'],
         ['sudo', 'systemctl', 'restart', 'geo-gpt.service']
     ]
-
+    os.environ['GIT_SSH_COMMAND'] = '/usr/bin/ssh'
     for command in commands:
         result = subprocess.run(command, capture_output=True, text=True)
         if result.returncode != 0:
