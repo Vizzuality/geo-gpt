@@ -17,3 +17,4 @@ pyproj
 GitPython
 hmac
 hashlib
+logging
