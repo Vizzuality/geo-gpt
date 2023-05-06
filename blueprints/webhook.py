@@ -7,6 +7,7 @@ from config import webhook_secret
 from sh import Command
 import sh
 import os
+from io import BytesIO
 
 webhook_bp = Blueprint("webhook", __name__)
 
