@@ -7,6 +7,7 @@ GeoGPT is a web application that provides land cover analysis and descriptions b
 
  ## Using docker
  Download and install docker:  https://docs.docker.com/get-docker/
+ 
 Run:
 
     docker build -t earthgpt .
