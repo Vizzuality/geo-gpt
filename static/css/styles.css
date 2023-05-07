@@ -34,7 +34,7 @@ html {
   -moz-tab-size: 4; /* 3 */
   -o-tab-size: 4;
      tab-size: 4; /* 3 */
-  font-family: Inter var; /* 4 */
+  font-family: inter, sans-serif; /* 4 */
   font-feature-settings: normal; /* 5 */
   font-variation-settings: normal; /* 6 */
 }
@@ -1294,7 +1294,7 @@ select {
   --tw-ring-color: rgb(209 213 219 / var(--tw-ring-opacity));
 }
 @tailwind typography;
-
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 #map {
     width: 100%;
     height: 500px;
