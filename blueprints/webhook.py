@@ -50,9 +50,10 @@ def deploy():
     os.environ['GIT_SSH_COMMAND'] = '/usr/bin/ssh'
     git = Command('/usr/bin/git')
     pip = Command('/home/ubuntu/.pyenv/versions/3.11.1/bin/pip')
-    node = Command('/home/ubuntu/.nvm/versions/node/v18.16.0/bin/node')
     yarn = Command('/home/ubuntu/.nvm/versions/node/v18.16.0/bin/yarn')
     sudo = Command('/usr/bin/sudo')
+    node_path = "/home/ubuntu/.nvm/versions/node/v18.16.0/bin"
+    os.environ["PATH"] = f"{node_path}:{os.environ['PATH']}"
 
     commands = [
         (git, ['fetch', 'origin', 'main']),
