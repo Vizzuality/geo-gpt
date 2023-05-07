@@ -66,10 +66,7 @@ def deploy():
 
     for cmd, args in commands:
         try:
-            result = cmd(*args, _out=BytesIO(), _bg_exc=False)
-            output = result.stdout.decode('utf-8').strip()
-            if output:
-                logging.info(output)
+            result = cmd(*args, _out=lambda line: logging.info(line.strip()), _bg_exc=False)
         except sh.ErrorReturnCode as e:
             error_output = e.stderr.decode('utf-8').strip()
             logging.error(f"Command '{cmd} {' '.join(args)}' failed with error: {error_output}")
