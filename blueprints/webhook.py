@@ -66,7 +66,7 @@ def deploy():
 
     for cmd, args in commands:
         try:
-            result = cmd(*args, _err_to_out=True, _out=BytesIO(), _err=BytesIO(), _bg_exc=False)
+            result = cmd(*args, _out=BytesIO(), _bg_exc=False)
             output = result.stdout.decode('utf-8').strip()
             if output:
                 logging.info(output)
