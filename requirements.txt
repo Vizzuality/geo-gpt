@@ -15,5 +15,4 @@ google-auth-oauthlib
 shapely
 pyproj
 GitPython
-logging
 sh
